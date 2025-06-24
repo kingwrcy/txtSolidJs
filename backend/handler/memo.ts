@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs'
-import { and, eq, gt } from 'drizzle-orm'
+import { and, eq, gt, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { rateLimiter, type Store } from "hono-rate-limiter"
 import { bodyLimit } from 'hono/body-limit'
@@ -191,6 +191,7 @@ app.get('/:path', async (c) => {
   const memo = result[0]
   const ip = c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || c.req.header('cf-connecting-ip') || '127.0.0.1'
 
+  console.log(`memo.same_ip: ${memo.same_ip}, IP  ${memo.ip} vs ${ip} for path ${path}`)
   if (memo.same_ip && memo.ip !== ip) {
     return c.json({
       success: false,
@@ -199,7 +200,7 @@ app.get('/:path', async (c) => {
   }
 
   await db.update(memos).set({
-    views: memo.views + 1,
+    views: sql`${memos.views} + 1`
   }).where(eq(memos.id, memo.id));
 
 
