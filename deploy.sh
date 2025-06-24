@@ -1,6 +1,7 @@
 #!/bin/bash
 
 cd /root/github/txtSolidJs
+git checkout .
 git pull
 
 cd backend

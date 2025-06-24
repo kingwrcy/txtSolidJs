@@ -92,7 +92,7 @@ export default function Detail() {
         }
       } catch (error) {
         console.error('获取数据失败:', error);
-        toast.error(`获取内容失败: ${error.message}，3秒后返回首页`, {
+        toast.error(`获取内容失败: ${error.message}`, {
           duration: 3000,
           position: 'top-center',
           className: 'text-xs'
@@ -101,8 +101,6 @@ export default function Detail() {
         setTimeout(() => {
           navigate('/');
         }, 3000);
-
-        throw error;
       }
     }
   );

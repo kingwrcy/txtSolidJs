@@ -118,6 +118,7 @@ export default function Home() {
     }).then((response) => {
       return response.json();
     }).then((result) => {
+
       if (!result.success) {
         toast.error(result.details || '保存失败，请稍后再试。', { duration: 5000 })
         return;
