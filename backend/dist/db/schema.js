@@ -33,7 +33,9 @@ export const memos = sqliteTable('memos', {
 });
 const sqlite = new Database(process.env.DB_FILE_NAME);
 const db = drizzle({ client: sqlite });
-migrate(db, {
-    migrationsFolder: path.join(process.cwd(), 'drizzle')
-});
+if (process.env.NODE_ENV === 'production') {
+    migrate(db, {
+        migrationsFolder: path.join(process.cwd(), 'drizzle')
+    });
+}
 export default db;
