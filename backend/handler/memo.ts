@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs'
-import { and, eq, gt, sql } from 'drizzle-orm'
+import { and, eq, gt, sql, type InferSelectModel } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { rateLimiter, type Store } from "hono-rate-limiter"
 import { bodyLimit } from 'hono/body-limit'
@@ -171,9 +171,17 @@ app.get('/:path', async (c) => {
       details: '路径是必填的'
     }, 400)
   }
+  const ip = c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || c.req.header('cf-connecting-ip') || '127.0.0.1'
 
-  const cached = cache.get(path)
+  const cached = cache.get<InferSelectModel<typeof memos>>(path)
   if (cached) {
+    console.log(`Cache hit for path: ${path}`);
+    if (cached.same_ip && cached.ip !== ip) {
+      return c.json({
+        success: false,
+        details: '只允许同一IP访问'
+      }, 401)
+    }
     return c.json({
       success: true,
       data: cached
@@ -189,7 +197,6 @@ app.get('/:path', async (c) => {
     }, 404)
   }
   const memo = result[0]
-  const ip = c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || c.req.header('cf-connecting-ip') || '127.0.0.1'
 
   console.log(`memo.same_ip: ${memo.same_ip}, IP  ${memo.ip} vs ${ip} for path ${path}`)
   if (memo.same_ip && memo.ip !== ip) {
