@@ -4,7 +4,7 @@ import { Hono } from 'hono'
 import { rateLimiter, type Store } from "hono-rate-limiter"
 import { bodyLimit } from 'hono/body-limit'
 import { marked } from 'marked'
-import MemoryStore from 'precise-memory-rate-limit'
+import MemoryStore from "../util/limit.js"
 import db, { memos } from '../db/schema.js'
 import { generateShortUrl } from '../util/id.js'
 import NodeCache from 'node-cache'
