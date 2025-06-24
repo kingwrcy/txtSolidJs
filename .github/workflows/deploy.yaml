@@ -14,4 +14,6 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.REMOTE_PORT }}
-          script_path: '/root/github/txtSolidJs/deploy.sh'
+          script: |
+            cd /root/github/txtSolidJs
+            ./deploy.sh
