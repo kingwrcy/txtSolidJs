@@ -70,12 +70,12 @@ export default function Detail() {
 
       try {
         const response = await fetch(`/api/memo/${path}`);
+        const result = await response.json();
 
         if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          throw new Error(result.details || '获取内容失败');
         }
 
-        const result = await response.json();
         setSuccess(result.success);
 
         if (result.success) {
