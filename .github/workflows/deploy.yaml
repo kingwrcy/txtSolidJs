@@ -23,22 +23,12 @@ jobs:
         working-directory: backend
         run: npm run build
 
-      - name: Deploy to Server
-        uses: easingthemes/ssh-deploy@main        
-        with:
-            SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-            SOURCE: "backend/drizzle/"
-            REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-            REMOTE_USER: ${{ secrets.REMOTE_USER }}
-            REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
-            TARGET: "/root/github/txtSolidJs/src/drizzle/"
-
-      - name: Deploy to Server
-        uses: easingthemes/ssh-deploy@main        
-        with:
-            SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-            SOURCE: "backend/dist/"
-            REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-            REMOTE_USER: ${{ secrets.REMOTE_USER }}
-            REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
-            TARGET: ${{ secrets.REMOTE_TARGET }}
+      - name: Copy files via SCP
+        run: |
+          # 安装 sshpass 或使用 SSH key
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > deploy_key
+          chmod 600 deploy_key
+          
+          # 复制文件
+          scp -i deploy_key -P ${{ secrets.REMOTE_PORT }} -r backend/dist/* ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/root/github/txtSolidJs
+          scp -i deploy_key -P ${{ secrets.REMOTE_PORT }} -r backend/drizzle/* ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/root/github/txtSolidJs/src/drizzle
