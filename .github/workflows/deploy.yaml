@@ -31,4 +31,5 @@ jobs:
           
           # 复制文件
           scp -i deploy_key -P ${{ secrets.REMOTE_PORT }} -o StrictHostKeyChecking=no -r backend/dist/* ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/root/github/txtSolidJs
-          scp -i deploy_key -P ${{ secrets.REMOTE_PORT }} -o StrictHostKeyChecking=no -r backend/drizzle/* ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/root/github/txtSolidJs/src/drizzle
+          scp -i deploy_key -P ${{ secrets.REMOTE_PORT }} -o StrictHostKeyChecking=no -r backend/drizzle/* ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/root/github/txtSolidJs
+          scp -i deploy_key -P ${{ secrets.REMOTE_PORT }} -o StrictHostKeyChecking=no -r backend/node_modules/* ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/root/github/txtSolidJs
