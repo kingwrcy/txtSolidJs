@@ -14,3 +14,6 @@ npm ci
 npm run build
 rm -rf /var/www/cmode/*
 cp -r /root/github/txtSolidJs/front/dist/* /var/www/cmode/
+
+echo 'Deployment completed successfully!'
+
