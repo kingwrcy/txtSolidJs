@@ -12,6 +12,9 @@
 backend/node_modules/
 front/node_modules/
 
+backend/dist/
+front/dist/
+
 
 # env
 .env
