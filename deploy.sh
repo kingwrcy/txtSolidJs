@@ -1,3 +1,5 @@
+#!/bin/bash
+
 cd /root/github/txtSolidJs
 git pull
 
