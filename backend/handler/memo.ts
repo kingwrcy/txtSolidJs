@@ -193,7 +193,7 @@ app.get('/:path', async (c) => {
   if (result.length === 0) {
     return c.json({
       success: false,
-      details: 'Memo not found'
+      details: '不存在的便签'
     }, 404)
   }
   const memo = result[0]

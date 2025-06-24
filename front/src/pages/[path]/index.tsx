@@ -67,32 +67,12 @@ export default function Detail() {
       if (!path) {
         throw new Error('路径参数缺失');
       }
+      const response = await fetch(`/api/memo/${path}`);
+      const result = await response.json();
 
-      try {
-        const response = await fetch(`/api/memo/${path}`);
-        const result = await response.json();
-
-        if (!response.ok) {
-          throw new Error(result.details || '获取内容失败');
-        }
-
-        setSuccess(result.success);
-
-        if (result.success) {
-          return {
-            content: result.data.content,
-            htmlContent: result.data.html_content,
-            type: result.data.type,
-            deletedAt: result.data.deleted_at,
-            createdAt: result.data.created_at,
-            updatedAt: result.data.updated_at,
-          };
-        } else {
-          throw new Error(result.details || '获取内容失败');
-        }
-      } catch (error) {
-        console.error('获取数据失败:', error);
-        toast.error(`获取内容失败: ${error.message}`, {
+      if (!response.ok || !result.success) {
+        console.log('获取内容失败:', result);
+        toast.error(`获取内容失败: ${result.details}`, {
           duration: 3000,
           position: 'top-center',
           className: 'text-xs'
@@ -101,6 +81,20 @@ export default function Detail() {
         setTimeout(() => {
           navigate('/');
         }, 3000);
+        return;
+      }
+
+      setSuccess(result.success);
+
+      if (result.success) {
+        return {
+          content: result.data.content,
+          htmlContent: result.data.html_content,
+          type: result.data.type,
+          deletedAt: result.data.deleted_at,
+          createdAt: result.data.created_at,
+          updatedAt: result.data.updated_at,
+        };
       }
     }
   );
