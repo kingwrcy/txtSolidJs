@@ -96,7 +96,7 @@ export default function Home() {
     setState('saveData', 'keep', keep);
   };
 
-  const textToCopy = createMemo(() => `${window.location.origin}/c/${state.saveData.path}`);
+  const textToCopy = createMemo(() => `${window.location.origin}/${state.saveData.path}`);
 
 
   const reset = () => {
@@ -196,7 +196,7 @@ export default function Home() {
               <label for="access-path" class="block text-sm font-medium text-gray-600 dark:text-gray-400">自定义访问路径</label>
               <div class="mt-1 flex rounded-md shadow-sm ">
                 <span class="inline-flex items-center px-3 py-2 rounded-l-md border border-r-0 border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-900/70 text-gray-500 dark:text-gray-400 sm:text-sm transition-colors">
-                  {window.location.origin}/c/
+                  {window.location.origin}/
                 </span>
                 <input autocomplete='off' onInput={handlePathChange} type="text" value={state.saveData.path} name="access-path" id="access-path" class="pl-2 flex-1 block w-full min-w-0 rounded-none rounded-r-md bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" placeholder="不填写自动生成" />
               </div>
@@ -229,7 +229,7 @@ export default function Home() {
           <Show when={state.done}>
             {
               <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                分享链接：<A href={`/c/${state.saveData.path}`} class="text-indigo-600 dark:text-indigo-400 mr-4">{`/c/${state.saveData.path}`}</A>
+                分享链接：<A href={`/${state.saveData.path}`} class="text-indigo-600 dark:text-indigo-400 mr-4">{`/${state.saveData.path}`}</A>
                 <CopyBtn size={16} color="green" text={textToCopy()} />
               </p>
             }

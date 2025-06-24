@@ -42,7 +42,7 @@ app.post('/save', rateLimiter({
   },
   store: new MemoryStore(5) as unknown as Store,
 }), bodyLimit({
-  maxSize: 10 * 1024, // 10kb
+  maxSize: 100 * 1024, // 10kb
   onError: (c) => {
     return c.json({
       success: false,

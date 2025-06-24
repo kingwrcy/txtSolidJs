@@ -7,29 +7,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Execute remote SSH commands using password
+        uses: appleboy/ssh-action@v1
         with:
-          node-version: 'latest'
-
-      - name: Install dependencies
-        working-directory: backend
-        run: npm ci
-
-      - name: Build the project
-        working-directory: backend
-        run: npm run build
-
-      - name: Copy files via SCP
-        run: |
-          # 安装 sshpass 或使用 SSH key
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > deploy_key
-          chmod 600 deploy_key
-          
-          # 复制文件
-          scp -i deploy_key -P ${{ secrets.REMOTE_PORT }} -o StrictHostKeyChecking=no -r backend/dist/* ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/root/github/txtSolidJs
-          scp -i deploy_key -P ${{ secrets.REMOTE_PORT }} -o StrictHostKeyChecking=no -r backend/drizzle/* ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/root/github/txtSolidJs/drizzle
-          scp -i deploy_key -P ${{ secrets.REMOTE_PORT }} -o StrictHostKeyChecking=no -r backend/node_modules/* ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/root/github/txtSolidJs/node_modules
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.REMOTE_PORT }}
+          script_path: '/root/github/txtSolidJs/deploy.sh'
