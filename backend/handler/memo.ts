@@ -91,7 +91,6 @@ app.post('/save', rateLimiter({
       details: '类型必须是"text"或"markdown"'
     }, 400)
   }
-  console.log(`Received memo save request: ${JSON.stringify(body)}`)
   if (body.sameIp === undefined) {
     body.sameIp = false
   }
