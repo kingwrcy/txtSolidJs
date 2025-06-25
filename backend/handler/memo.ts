@@ -91,6 +91,7 @@ app.post('/save', rateLimiter({
       details: '类型必须是"text"或"markdown"'
     }, 400)
   }
+  console.log(`Received memo save request: ${JSON.stringify(body)}`)
   if (body.sameIp === undefined) {
     body.sameIp = false
   }
@@ -147,6 +148,7 @@ app.post('/save', rateLimiter({
       html_content: html_content,
       ip: ip,
       type: body.type,
+      same_ip: body.sameIp ? 1 : 0,
       password: hashPassword,
       updated_at: Date.now(),
       deleted_at: deletedAt
@@ -173,32 +175,19 @@ app.get('/:path', async (c) => {
   }
   const ip = c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || c.req.header('cf-connecting-ip') || '127.0.0.1'
 
-  const cached = cache.get<InferSelectModel<typeof memos>>(path)
-  if (cached) {
-    console.log(`Cache hit for path: ${path}`);
-    if (cached.same_ip && cached.ip !== ip) {
-      return c.json({
-        success: false,
-        details: '只允许同一IP访问'
-      }, 401)
-    }
-    return c.json({
-      success: true,
-      data: cached
-    }, 200)
+  let memo = cache.get<InferSelectModel<typeof memos>>(path)
+  if (!memo) {
+    const result = await db.select().from(memos).where(and(eq(memos.path, path), gt(memos.deleted_at, Date.now()))).limit(1)
+    memo = result != null && result.length > 0 ? result[0] : undefined
   }
 
-  const result = await db.select().from(memos).where(and(eq(memos.path, path), gt(memos.deleted_at, Date.now()))).limit(1)
-
-  if (result.length === 0) {
+  if (!memo) {
     return c.json({
       success: false,
       details: '不存在的便签'
     }, 404)
   }
-  const memo = result[0]
 
-  console.log(`memo.same_ip: ${memo.same_ip}, IP  ${memo.ip} vs ${ip} for path ${path}`)
   if (memo.same_ip && memo.ip !== ip) {
     return c.json({
       success: false,
@@ -206,12 +195,21 @@ app.get('/:path', async (c) => {
     }, 401)
   }
 
+  const lessThen7Days = memo.deleted_at - Date.now() < 1000 * 24 * 60 * 60 * 7
+
+
   await db.update(memos).set({
-    views: sql`${memos.views} + 1`
+    views: sql`${memos.views} + 1`,
+    deleted_at: lessThen7Days ? sql`${memos.deleted_at} + 1000 * 24 * 60 * 60 * 7` : sql`${memos.deleted_at}`
   }).where(eq(memos.id, memo.id));
 
 
   memo.password = null
+  memo.views += 1
+  if (lessThen7Days) {
+    memo.deleted_at = new Date(memo.deleted_at + 1000 * 24 * 60 * 60 * 7).getTime()
+  }
+
 
   cache.set(path, memo, 1800) // 缓存30分钟
 

@@ -133,12 +133,24 @@ export default function Home() {
     });
   };
 
+  function getDaysDifference(date1: string | Date, date2: string | Date): number {
+    const oneDay = 24 * 60 * 60 * 1000; // 一天的毫秒数
+    const firstDate = new Date(date1);
+    const secondDate = new Date(date2);
+
+    return Math.round(Math.abs((firstDate.getTime() - secondDate.getTime()) / oneDay));
+  }
+
   onMount(async () => {
     if (searchParams.path) {
       const response = await fetch(`/api/memo/${searchParams.path}`);
       const result = await response.json();
       if (result.success) {
-        setState('saveData', result.data);
+        setState('saveData', 'keep', getDaysDifference(result.data.deleted_at, new Date()));
+        setState('saveData', 'content', result.data.content || '');
+        setState('saveData', 'type', result.data.type || 'text');
+        setState('saveData', 'path', result.data.path || '');
+        setState('saveData', 'sameIp', result.data.same_ip || false);
       }
     }
   });
@@ -150,7 +162,11 @@ export default function Home() {
         <div class="w-full max-w-[800px] mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-8 space-y-8 transition-colors duration-300">
 
           <div>
-            <label for="editor" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">分享内容</label>
+            <div class="flex justify-between">
+              <label for="editor" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">分享内容</label>
+              <A href="/faq" class="text-sm text-blue-500 dark:text-gray-400 hover:underline">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32" width={20} height={20}><g fill="none"><path d="M17.5 22a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0zM14 12c0-.537.18-1.041.497-1.398c.301-.339.774-.602 1.503-.602c1.308 0 2.382 1.348 2.03 2.758c-.18.722-.61 1.135-1.257 1.756l-.178.17C15.866 15.39 15 16.328 15 18a1 1 0 1 0 2 0c0-.827.353-1.267.985-1.877l.191-.182c.614-.58 1.466-1.385 1.794-2.698C20.618 10.653 18.692 8 16 8c-1.271 0-2.298.487-2.997 1.273C12.32 10.041 12 11.037 12 12a1 1 0 1 0 2 0zM2 16C2 8.268 8.268 2 16 2s14 6.268 14 14s-6.268 14-14 14S2 23.732 2 16zM16 4C9.373 4 4 9.373 4 16s5.373 12 12 12s12-5.373 12-12S22.627 4 16 4z" fill="currentColor"></path></g></svg></A>
+            </div>
             <textarea value={state.saveData.content} onInput={handleContentChange}
               id="editor"
               class="min-h-[350px] w-full bg-gray-50 dark:bg-gray-900/70 rounded-lg p-4 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200"
